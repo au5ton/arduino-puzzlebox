@@ -30,7 +30,8 @@ int rand_blue = 0;
 
 boolean correct_r = false, correct_g = false, correct_b = false;
 
-double tolerance = 10.0;
+//a tolerance of 25.0 gives like a 10% tolerance. Really weird math, yo.
+double tolerance = 25.0; //this divided by 2 is sorta the percentage of tolerance, adjust as necessary
 
 void setup() {
   Serial.begin(9600);
@@ -50,7 +51,7 @@ void setup() {
   rand_red = random(0,255);
   rand_green = random(0,255);
   rand_blue = random(0,255);
-  Serial.println("Done.");
+  Serial.println("Done.\n\n");
   
   
 }
@@ -64,7 +65,20 @@ void loop() {
   analogWrite(LED_G,(int)floor((double)guess_g/4.0));
   analogWrite(LED_B,(int)floor((double)guess_b/4.0));
   
-  if(floor(guess_r/tolerance*2) == floor(rand_red/tolerance*2)) {
+  Serial.print("r: ");
+  Serial.print(floor(floor((double)guess_r/4.0)/tolerance));
+  Serial.print(" g: ");
+  Serial.print(floor(floor((double)guess_g/4.0)/tolerance));
+  Serial.print(" b: ");
+  Serial.print(floor(floor((double)guess_b/4.0)/tolerance));
+  Serial.print("    rr: ");
+  Serial.print(floor(rand_red/tolerance));
+  Serial.print(" rg: ");
+  Serial.print(floor(rand_green/tolerance));
+  Serial.print(" rb: ");
+  Serial.println(floor(rand_blue/tolerance));
+  
+  if(floor(floor((double)guess_r/4.0)/tolerance) == floor(rand_red/tolerance)) {
     digitalWrite(IND_R_CORRECT,HIGH);
     digitalWrite(IND_R_INCORRECT,LOW);
     correct_r = true;
@@ -75,7 +89,7 @@ void loop() {
     correct_r = false;
   }
   
-  if(floor(guess_g/tolerance*2) == floor(rand_green/tolerance*2)) {
+  if(floor(floor((double)guess_g/4.0)/tolerance) == floor(rand_green/tolerance)) {
     digitalWrite(IND_G_CORRECT,HIGH);
     digitalWrite(IND_G_INCORRECT,LOW);
     correct_g = true;
@@ -86,7 +100,7 @@ void loop() {
     correct_g = false;
   }
   
-  if(floor(guess_b/tolerance*2) == floor(rand_blue/tolerance*2)) {
+  if(floor(floor((double)guess_b/4.0)/tolerance) == floor(rand_blue/tolerance)) {
     digitalWrite(IND_B_CORRECT,HIGH);
     digitalWrite(IND_B_INCORRECT,LOW);
     correct_b = true;
