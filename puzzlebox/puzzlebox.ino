@@ -30,6 +30,8 @@ int rand_blue = 0;
 
 boolean correct_r = false, correct_g = false, correct_b = false;
 
+double tolerance = 10.0;
+
 void setup() {
   Serial.begin(9600);
   randomSeed(analogRead(A5));
@@ -58,7 +60,11 @@ void loop() {
   guess_g = analogRead(DIAL_G);
   guess_b = analogRead(DIAL_B);
   
-  if(floor(guess_r/10.0) == floor(rand_red/10.0)) {
+  analogWrite(LED_R,(int)floor((double)guess_r/4.0));
+  analogWrite(LED_G,(int)floor((double)guess_g/4.0));
+  analogWrite(LED_B,(int)floor((double)guess_b/4.0));
+  
+  if(floor(guess_r/tolerance*2) == floor(rand_red/tolerance*2)) {
     digitalWrite(IND_R_CORRECT,HIGH);
     digitalWrite(IND_R_INCORRECT,LOW);
     correct_r = true;
@@ -69,7 +75,7 @@ void loop() {
     correct_r = false;
   }
   
-  if(floor(guess_g/10.0) == floor(rand_green/10.0)) {
+  if(floor(guess_g/tolerance*2) == floor(rand_green/tolerance*2)) {
     digitalWrite(IND_G_CORRECT,HIGH);
     digitalWrite(IND_G_INCORRECT,LOW);
     correct_g = true;
@@ -80,7 +86,7 @@ void loop() {
     correct_g = false;
   }
   
-  if(floor(guess_b/10.0) == floor(rand_blue/10.0)) {
+  if(floor(guess_b/tolerance*2) == floor(rand_blue/tolerance*2)) {
     digitalWrite(IND_B_CORRECT,HIGH);
     digitalWrite(IND_B_INCORRECT,LOW);
     correct_b = true;
