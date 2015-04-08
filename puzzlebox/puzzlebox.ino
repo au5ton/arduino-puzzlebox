@@ -30,8 +30,20 @@ int rand_blue = 0;
 
 boolean correct_r = false, correct_g = false, correct_b = false;
 
-//a tolerance of 25.0 gives like a 10% tolerance. Really weird math, yo.
-double tolerance = 25.0; //this divided by 2 is sorta the percentage of tolerance, adjust as necessary
+//DO NOT SET AS 0, IT WILL DIVIDE BY 0 AND THATS BAD
+double tolerance = 32.0;
+/*
+
+TOLERANCE DIFFICULTIES
+
+1.0 is impossible mode
+2.0 is expert mode
+4.0 is hard mode
+8.0 is medium mode
+16.0 is easy mode
+32.0 is beginner mode
+
+*/
 
 void setup() {
   Serial.begin(9600);
