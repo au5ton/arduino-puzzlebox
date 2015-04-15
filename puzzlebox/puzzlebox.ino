@@ -25,8 +25,10 @@ int guess_r = 0;
 int guess_g = 0;
 int guess_b = 0;
 int rand_red = 0;
-int rand_green = 0; 
+int rand_green = 0;
 int rand_blue = 0;
+
+boolean super_impossible_mode = false;
 
 boolean correct_r = false, correct_g = false, correct_b = false;
 
@@ -47,79 +49,139 @@ TOLERANCE DIFFICULTIES
 void setup() {
   Serial.begin(9600);
   randomSeed(analogRead(A5));
-  pinMode(LED_R,OUTPUT);
-  pinMode(LED_G,OUTPUT);
-  pinMode(LED_B,OUTPUT);
-  
-  pinMode(IND_R_CORRECT,OUTPUT);
-  pinMode(IND_R_INCORRECT,OUTPUT);
-  pinMode(IND_G_CORRECT,OUTPUT);
-  pinMode(IND_G_INCORRECT,OUTPUT);
-  pinMode(IND_B_CORRECT,OUTPUT);
-  pinMode(IND_B_INCORRECT,OUTPUT);
+  pinMode(LED_R, OUTPUT);
+  pinMode(LED_G, OUTPUT);
+  pinMode(LED_B, OUTPUT);
+
+  pinMode(IND_R_CORRECT, OUTPUT);
+  pinMode(IND_R_INCORRECT, OUTPUT);
+  pinMode(IND_G_CORRECT, OUTPUT);
+  pinMode(IND_G_INCORRECT, OUTPUT);
+  pinMode(IND_B_CORRECT, OUTPUT);
+  pinMode(IND_B_INCORRECT, OUTPUT);
 
   Serial.print("Generating a random color...");
-  rand_red = random(0,255);
-  rand_green = random(0,255);
-  rand_blue = random(0,255);
+  if (super_impossible_mode == true) {
+    rand_red = random(0, 1023);
+    rand_green = random(0, 1023);
+    rand_blue = random(0, 1023);
+  }
+  else {
+    rand_red = random(0, 255);
+    rand_green = random(0, 255);
+    rand_blue = random(0, 255);
+  }
   Serial.println("Done.\n\n");
-  
-  
+
+
 }
 
 void loop() {
   guess_r = analogRead(DIAL_R);
   guess_g = analogRead(DIAL_G);
   guess_b = analogRead(DIAL_B);
-  
-  analogWrite(LED_R,(int)floor((double)guess_r/4.0));
-  analogWrite(LED_G,(int)floor((double)guess_g/4.0));
-  analogWrite(LED_B,(int)floor((double)guess_b/4.0));
-  
-  Serial.print("r: ");
-  Serial.print(floor(floor((double)guess_r/4.0)/tolerance));
-  Serial.print(" g: ");
-  Serial.print(floor(floor((double)guess_g/4.0)/tolerance));
-  Serial.print(" b: ");
-  Serial.print(floor(floor((double)guess_b/4.0)/tolerance));
-  Serial.print("    rr: ");
-  Serial.print(floor(rand_red/tolerance));
-  Serial.print(" rg: ");
-  Serial.print(floor(rand_green/tolerance));
-  Serial.print(" rb: ");
-  Serial.println(floor(rand_blue/tolerance));
-  
-  if(floor(floor((double)guess_r/4.0)/tolerance) == floor(rand_red/tolerance)) {
-    digitalWrite(IND_R_CORRECT,HIGH);
-    digitalWrite(IND_R_INCORRECT,LOW);
-    correct_r = true;
+
+  analogWrite(LED_R, (int)floor((double)guess_r / 4.0));
+  analogWrite(LED_G, (int)floor((double)guess_g / 4.0));
+  analogWrite(LED_B, (int)floor((double)guess_b / 4.0));
+
+  if (super_impossible_mode == true) {
+    Serial.print("r: ");
+    Serial.print(guess_r);
+    Serial.print(" g: ");
+    Serial.print(guess_g);
+    Serial.print(" b: ");
+    Serial.print(guess_b);
+    Serial.print("    rr: ");
+    Serial.print(rand_red);
+    Serial.print(" rg: ");
+    Serial.print(rand_green);
+    Serial.print(" rb: ");
+    Serial.println(rand_blue);
+
+
+    if (guess_r == rand_red) {
+      digitalWrite(IND_R_CORRECT, HIGH);
+      digitalWrite(IND_R_INCORRECT, LOW);
+      correct_r = true;
+    }
+    else {
+      digitalWrite(IND_R_CORRECT, LOW);
+      digitalWrite(IND_R_INCORRECT, HIGH);
+      correct_r = false;
+    }
+
+    if (guess_g == rand_green) {
+      digitalWrite(IND_G_CORRECT, HIGH);
+      digitalWrite(IND_G_INCORRECT, LOW);
+      correct_g = true;
+    }
+    else {
+      digitalWrite(IND_G_CORRECT, LOW);
+      digitalWrite(IND_G_INCORRECT, HIGH);
+      correct_g = false;
+    }
+
+    if (guess_b == rand_blue) {
+      digitalWrite(IND_B_CORRECT, HIGH);
+      digitalWrite(IND_B_INCORRECT, LOW);
+      correct_b = true;
+    }
+    else {
+      digitalWrite(IND_B_CORRECT, LOW);
+      digitalWrite(IND_B_INCORRECT, HIGH);
+      correct_b = false;
+    }
   }
   else {
-    digitalWrite(IND_R_CORRECT,LOW);
-    digitalWrite(IND_R_INCORRECT,HIGH);
-    correct_r = false;
+    Serial.print("r: ");
+    Serial.print(floor(floor((double)guess_r / 4.0) / tolerance));
+    Serial.print(" g: ");
+    Serial.print(floor(floor((double)guess_g / 4.0) / tolerance));
+    Serial.print(" b: ");
+    Serial.print(floor(floor((double)guess_b / 4.0) / tolerance));
+    Serial.print("    rr: ");
+    Serial.print(floor(rand_red / tolerance));
+    Serial.print(" rg: ");
+    Serial.print(floor(rand_green / tolerance));
+    Serial.print(" rb: ");
+    Serial.println(floor(rand_blue / tolerance));
+
+
+    if (floor(floor((double)guess_r / 4.0) / tolerance) == floor(rand_red / tolerance)) {
+      digitalWrite(IND_R_CORRECT, HIGH);
+      digitalWrite(IND_R_INCORRECT, LOW);
+      correct_r = true;
+    }
+    else {
+      digitalWrite(IND_R_CORRECT, LOW);
+      digitalWrite(IND_R_INCORRECT, HIGH);
+      correct_r = false;
+    }
+
+    if (floor(floor((double)guess_g / 4.0) / tolerance) == floor(rand_green / tolerance)) {
+      digitalWrite(IND_G_CORRECT, HIGH);
+      digitalWrite(IND_G_INCORRECT, LOW);
+      correct_g = true;
+    }
+    else {
+      digitalWrite(IND_G_CORRECT, LOW);
+      digitalWrite(IND_G_INCORRECT, HIGH);
+      correct_g = false;
+    }
+
+    if (floor(floor((double)guess_b / 4.0) / tolerance) == floor(rand_blue / tolerance)) {
+      digitalWrite(IND_B_CORRECT, HIGH);
+      digitalWrite(IND_B_INCORRECT, LOW);
+      correct_b = true;
+    }
+    else {
+      digitalWrite(IND_B_CORRECT, LOW);
+      digitalWrite(IND_B_INCORRECT, HIGH);
+      correct_b = false;
+    }
   }
-  
-  if(floor(floor((double)guess_g/4.0)/tolerance) == floor(rand_green/tolerance)) {
-    digitalWrite(IND_G_CORRECT,HIGH);
-    digitalWrite(IND_G_INCORRECT,LOW);
-    correct_g = true;
-  }
-  else {
-    digitalWrite(IND_G_CORRECT,LOW);
-    digitalWrite(IND_G_INCORRECT,HIGH);
-    correct_g = false;
-  }
-  
-  if(floor(floor((double)guess_b/4.0)/tolerance) == floor(rand_blue/tolerance)) {
-    digitalWrite(IND_B_CORRECT,HIGH);
-    digitalWrite(IND_B_INCORRECT,LOW);
-    correct_b = true;
-  }
-  else {
-    digitalWrite(IND_B_CORRECT,LOW);
-    digitalWrite(IND_B_INCORRECT,HIGH);
-    correct_b = false;
-  }
-  
+
+
+
 }
