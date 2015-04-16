@@ -21,14 +21,19 @@
 #define IND_B_CORRECT 4
 #define IND_B_INCORRECT 7
 
-int guess_r = 0;
-int guess_g = 0;
-int guess_b = 0;
-int rand_red = 0;
-int rand_green = 0;
-int rand_blue = 0;
+int guess_r = 0; //Your guess of the R value
+int guess_g = 0; //Your guess of the G value
+int guess_b = 0; //Your guess of the B value
+int rand_red = 0; //The randomly generated R value you're trying to find
+int rand_green = 0; //The randomly generated G value you're trying to find
+int rand_blue = 0; //The randomly generated B value you're trying to find
 
-boolean super_impossible_mode = false;
+double totalTimeElapsed = 0.0; //Total time elapsed
+double timeElapsed = 0.0; //Time elapsed this cycle only
+const double second = 1000.0; //The time of 1 second in milliseconds
+double impossibleModeReset = 60.0*second; //The amount of seconds before the random numbers re-generate while in impossible mode
+int impossibleCycleCount = 0; //Amount of times the impossible mode numbers have been re-generated
+boolean super_impossible_mode = true;
 
 boolean correct_r = false, correct_g = false, correct_b = false;
 
@@ -97,8 +102,26 @@ void loop() {
     Serial.print(" rg: ");
     Serial.print(rand_green);
     Serial.print(" rb: ");
-    Serial.println(rand_blue);
+    Serial.print(rand_blue);
+    Serial.print("  te: ");
+    Serial.print(timeElapsed/1000.0);
+    Serial.print(" tte: ");
+    Serial.print(totalTimeElapsed/1000.0);
+    Serial.print(" c: ");
+    Serial.println(impossibleCycleCount);
+    
+    delay(second/20);
+    timeElapsed += (second/20);
+    totalTimeElapsed += (second/20);
 
+    if(timeElapsed > impossibleModeReset){
+      timeElapsed = 0.0;
+      rand_red = random(0, 1023);
+      rand_green = random(0, 1023);
+      rand_blue = random(0, 1023);
+      impossibleCycleCount++;
+      Serial.println("YOU\'RE OUT OF TIME! REGENERATED NUMBERS!");
+    }
 
     if (guess_r == rand_red) {
       digitalWrite(IND_R_CORRECT, HIGH);
