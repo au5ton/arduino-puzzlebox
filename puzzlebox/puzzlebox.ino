@@ -103,7 +103,7 @@ void loop() {
     Serial.print(rand_green);
     Serial.print(" rb: ");
     Serial.print(rand_blue);
-    Serial.print("  te: ");
+    Serial.print("    te: ");
     Serial.print(timeElapsed/1000.0);
     Serial.print(" tte: ");
     Serial.print(totalTimeElapsed/1000.0);
