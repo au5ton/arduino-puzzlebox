@@ -11,7 +11,7 @@
 #define DATA 6
 #define BRIDGE_OUT 12
 #define BRIDGE_IN 7
-#define BUZZER 13
+#define BUZZER 3
 
 const int digits[] = {3, 159, 37, 13, 153, 73, 65, 31, 1, 25};
 const int t = 12;
@@ -37,11 +37,11 @@ void setup(){
   pinMode(BRIDGE_IN, INPUT);
   pinMode(t, INPUT);
   digitalWrite(BRIDGE_OUT,LOW);
-  digitalWrite(BUZZER,LOW);
+  analogWrite(BUZZER,0);
 }
 
 void loop(){
-  for (int i = 60; i > 0; i--)
+  for (int i = 60; i >= 0; i--)
   {
     digitalWrite(LATCH, LOW);
     shiftOut(DATA, CLOCK, LSBFIRST, digits[i % 10]);
@@ -51,15 +51,18 @@ void loop(){
       gameWon = true;
       break;
     }
+    Serial.println("1 SECOND");
     delay(1000);
   }
   //Game over
   if(gameWon == false){
     digitalWrite(BRIDGE_OUT, HIGH);
-    digitalWrite(BUZZER,HIGH);
+    analogWrite(BUZZER,255);
   }
   while(true){
     //wait for gameState to change from "win" to "lose"
+    digitalWrite(BRIDGE_OUT,LOW);
+    Serial.println("stopwatch done...");
   }
 }
 

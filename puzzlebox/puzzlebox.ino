@@ -40,7 +40,7 @@ boolean super_impossible_mode = false;
 boolean correct_r = false, correct_g = false, correct_b = false;
 
 //DO NOT SET AS 0, IT WILL DIVIDE BY 0 AND THATS BAD
-double tolerance = 1.0;
+double tolerance = 32.0;
 /*
 TOLERANCE DIFFICULTIES
 
@@ -111,6 +111,8 @@ void loop() {
     
     while(true){
       //wait for reset
+      Serial.println("puzzlebox done...");
+      digitalWrite(BRIDGE_OUT,LOW);
     }
     
   }
