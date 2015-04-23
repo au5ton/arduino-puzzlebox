@@ -14,24 +14,20 @@ void setup()
   pinMode(LATCH, OUTPUT);
   pinMode(CLOCK, OUTPUT);
   pinMode(t, INPUT);
+
 }
 
 void loop()
 {
   for (int i = 0; i < 60; i++)
   {
-    Serial.println("yes");
     digitalWrite(LATCH, LOW);
-    shiftOut(DATA, CLOCK, LSBFIRST, B00000000);
-    shiftOut(DATA, CLOCK, LSBFIRST, B00000000);
+    shiftOut(DATA, CLOCK, LSBFIRST, digits[i % 10]);
+    shiftOut(DATA, CLOCK, LSBFIRST, digits[i / 10]);
     digitalWrite(LATCH, HIGH);
     delay(1000);
   }
 
-//  digitalWrite(LATCH, LOW);
-//  shiftOut(DATA, CLOCK, LSBFIRST, digits[i / 10]);
-//  shiftOut(DATA, CLOCK, LSBFIRST, digits[i % 10]);
-//  digitalWrite(LATCH, HIGH);
 
 }
 
