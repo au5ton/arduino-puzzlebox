@@ -20,6 +20,8 @@
 #define IND_G_INCORRECT 6
 #define IND_B_CORRECT 4
 #define IND_B_INCORRECT 7
+#define BRIDGE_OUT 12
+#define BRIDGE_IN 8
 
 int guess_r = 0; //Your guess of the R value
 int guess_g = 0; //Your guess of the G value
@@ -33,7 +35,7 @@ double timeElapsed = 0.0; //Time elapsed this cycle only
 const double second = 1000.0; //The time of 1 second in milliseconds
 double impossibleModeReset = 60.0*second; //The amount of seconds before the random numbers re-generate while in impossible mode
 int impossibleCycleCount = 0; //Amount of times the impossible mode numbers have been re-generated
-boolean super_impossible_mode = true;
+boolean super_impossible_mode = false;
 
 boolean correct_r = false, correct_g = false, correct_b = false;
 
@@ -64,6 +66,10 @@ void setup() {
   pinMode(IND_G_INCORRECT, OUTPUT);
   pinMode(IND_B_CORRECT, OUTPUT);
   pinMode(IND_B_INCORRECT, OUTPUT);
+  
+  pinMode(BRIDGE_OUT, OUTPUT);
+  pinMode(BRIDGE_IN, INPUT);
+  digitalWrite(BRIDGE_OUT,LOW);
 
   Serial.print("Generating a random color...");
   if (super_impossible_mode == true) {
@@ -89,6 +95,29 @@ void loop() {
   analogWrite(LED_R, (int)floor((double)guess_r / 4.0));
   analogWrite(LED_G, (int)floor((double)guess_g / 4.0));
   analogWrite(LED_B, (int)floor((double)guess_b / 4.0));
+  
+  if(digitalRead(BRIDGE_IN) == HIGH) {
+    //Time out, resetting numbers
+    digitalWrite(IND_R_INCORRECT,HIGH);
+    digitalWrite(IND_R_CORRECT,LOW);
+    digitalWrite(IND_G_INCORRECT,HIGH);
+    digitalWrite(IND_G_CORRECT,LOW);
+    digitalWrite(IND_B_INCORRECT,HIGH);
+    digitalWrite(IND_B_CORRECT,LOW);
+    
+    rand_red = -10;
+    rand_green = -10;
+    rand_blue = -10;
+    
+    while(true){
+      //wait for reset
+    }
+    
+  }
+  
+  if(correct_r == true && correct_g == true && correct_b == true) {
+    digitalWrite(BRIDGE_OUT,HIGH);
+  }
 
   if (super_impossible_mode == true) {
     Serial.print("r: ");
@@ -109,10 +138,6 @@ void loop() {
     Serial.print(totalTimeElapsed/1000.0);
     Serial.print(" c: ");
     Serial.println(impossibleCycleCount);
-    
-    delay(second/20);
-    timeElapsed += (second/20);
-    totalTimeElapsed += (second/20);
 
     if(timeElapsed > impossibleModeReset){
       timeElapsed = 0.0;
@@ -204,7 +229,5 @@ void loop() {
       correct_b = false;
     }
   }
-
-
 
 }
