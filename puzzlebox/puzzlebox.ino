@@ -58,6 +58,7 @@ void setup() {
   randomSeed(analogRead(A5));
   pinMode(LED_R, OUTPUT);
   pinMode(LED_G, OUTPUT);
+  
   pinMode(LED_B, OUTPUT);
 
   pinMode(IND_R_CORRECT, OUTPUT);
@@ -69,15 +70,17 @@ void setup() {
   
   pinMode(BRIDGE_OUT, OUTPUT);
   pinMode(BRIDGE_IN, INPUT);
-  digitalWrite(BRIDGE_OUT,LOW);
+  digitalWrite(BRIDGE_OUT,LOW); //Writes low to the other Arduino so it doesn't think that the game is over yet
 
   Serial.print("Generating a random color...");
   if (super_impossible_mode == true) {
+    //Generates a more difficult random "color"
     rand_red = random(0, 1023);
     rand_green = random(0, 1023);
     rand_blue = random(0, 1023);
   }
   else {
+    //Generates the random color
     rand_red = random(0, 255);
     rand_green = random(0, 255);
     rand_blue = random(0, 255);
@@ -88,16 +91,21 @@ void setup() {
 }
 
 void loop() {
+  
+  //Saves the data from the Dials into variables
   guess_r = analogRead(DIAL_R);
   guess_g = analogRead(DIAL_G);
   guess_b = analogRead(DIAL_B);
 
+  //Writes the color you're guessing to the RGB LED, so you can see your guess
   analogWrite(LED_R, (int)floor((double)guess_r / 4.0));
   analogWrite(LED_G, (int)floor((double)guess_g / 4.0));
   analogWrite(LED_B, (int)floor((double)guess_b / 4.0));
   
+  //When the timer times out it sends a signal
+  //If the signal is received, ...
   if(digitalRead(BRIDGE_IN) == HIGH) {
-    //Time out, resetting numbers
+    // ... then turn all the Indicators to RED
     digitalWrite(IND_R_INCORRECT,HIGH);
     digitalWrite(IND_R_CORRECT,LOW);
     digitalWrite(IND_G_INCORRECT,HIGH);
@@ -105,10 +113,12 @@ void loop() {
     digitalWrite(IND_B_INCORRECT,HIGH);
     digitalWrite(IND_B_CORRECT,LOW);
     
+    //Changes the random color to something that's un-guessable
     rand_red = -10;
     rand_green = -10;
     rand_blue = -10;
     
+    //Infinite loop that waits for you to reset the Arduino
     while(true){
       //wait for reset
       Serial.println("puzzlebox done...");
@@ -117,73 +127,75 @@ void loop() {
     
   }
   
+  //If you've guessed all of them correctly, ...
   if(correct_r == true && correct_g == true && correct_b == true) {
+    // ... send a signal to the timer to stop
     digitalWrite(BRIDGE_OUT,HIGH);
   }
 
-  if (super_impossible_mode == true) {
-    Serial.print("r: ");
-    Serial.print(guess_r);
-    Serial.print(" g: ");
-    Serial.print(guess_g);
-    Serial.print(" b: ");
-    Serial.print(guess_b);
-    Serial.print("    rr: ");
-    Serial.print(rand_red);
-    Serial.print(" rg: ");
-    Serial.print(rand_green);
-    Serial.print(" rb: ");
-    Serial.print(rand_blue);
-    Serial.print("    te: ");
-    Serial.print(timeElapsed/1000.0);
-    Serial.print(" tte: ");
-    Serial.print(totalTimeElapsed/1000.0);
-    Serial.print(" c: ");
-    Serial.println(impossibleCycleCount);
-
-    if(timeElapsed > impossibleModeReset){
-      timeElapsed = 0.0;
-      rand_red = random(0, 1023);
-      rand_green = random(0, 1023);
-      rand_blue = random(0, 1023);
-      impossibleCycleCount++;
-      Serial.println("YOU\'RE OUT OF TIME! REGENERATED NUMBERS!");
-    }
-
-    if (guess_r == rand_red) {
-      digitalWrite(IND_R_CORRECT, HIGH);
-      digitalWrite(IND_R_INCORRECT, LOW);
-      correct_r = true;
-    }
-    else {
-      digitalWrite(IND_R_CORRECT, LOW);
-      digitalWrite(IND_R_INCORRECT, HIGH);
-      correct_r = false;
-    }
-
-    if (guess_g == rand_green) {
-      digitalWrite(IND_G_CORRECT, HIGH);
-      digitalWrite(IND_G_INCORRECT, LOW);
-      correct_g = true;
-    }
-    else {
-      digitalWrite(IND_G_CORRECT, LOW);
-      digitalWrite(IND_G_INCORRECT, HIGH);
-      correct_g = false;
-    }
-
-    if (guess_b == rand_blue) {
-      digitalWrite(IND_B_CORRECT, HIGH);
-      digitalWrite(IND_B_INCORRECT, LOW);
-      correct_b = true;
-    }
-    else {
-      digitalWrite(IND_B_CORRECT, LOW);
-      digitalWrite(IND_B_INCORRECT, HIGH);
-      correct_b = false;
-    }
-  }
-  else {
+//  if (super_impossible_mode == true) {
+//    Serial.print("r: ");
+//    Serial.print(guess_r);
+//    Serial.print(" g: ");
+//    Serial.print(guess_g);
+//    Serial.print(" b: ");
+//    Serial.print(guess_b);
+//    Serial.print("    rr: ");
+//    Serial.print(rand_red);
+//    Serial.print(" rg: ");
+//    Serial.print(rand_green);
+//    Serial.print(" rb: ");
+//    Serial.print(rand_blue);
+//    Serial.print("    te: ");
+//    Serial.print(timeElapsed/1000.0);
+//    Serial.print(" tte: ");
+//    Serial.print(totalTimeElapsed/1000.0);
+//    Serial.print(" c: ");
+//    Serial.println(impossibleCycleCount);
+//
+//    if(timeElapsed > impossibleModeReset){
+//      timeElapsed = 0.0;
+//      rand_red = random(0, 1023);
+//      rand_green = random(0, 1023);
+//      rand_blue = random(0, 1023);
+//      impossibleCycleCount++;
+//      Serial.println("YOU\'RE OUT OF TIME! REGENERATED NUMBERS!");
+//    }
+//
+//    if (guess_r == rand_red) {
+//      digitalWrite(IND_R_CORRECT, HIGH);
+//      digitalWrite(IND_R_INCORRECT, LOW);
+//      correct_r = true;
+//    }
+//    else {
+//      digitalWrite(IND_R_CORRECT, LOW);
+//      digitalWrite(IND_R_INCORRECT, HIGH);
+//      correct_r = false;
+//    }
+//
+//    if (guess_g == rand_green) {
+//      digitalWrite(IND_G_CORRECT, HIGH);
+//      digitalWrite(IND_G_INCORRECT, LOW);
+//      correct_g = true;
+//    }
+//    else {
+//      digitalWrite(IND_G_CORRECT, LOW);
+//      digitalWrite(IND_G_INCORRECT, HIGH);
+//      correct_g = false;
+//    }
+//
+//    if (guess_b == rand_blue) {
+//      digitalWrite(IND_B_CORRECT, HIGH);
+//      digitalWrite(IND_B_INCORRECT, LOW);
+//      correct_b = true;
+//    }
+//    else {
+//      digitalWrite(IND_B_CORRECT, LOW);
+//      digitalWrite(IND_B_INCORRECT, HIGH);
+//      correct_b = false;
+//    }
+//  }
+  //else {
     Serial.print("r: ");
     Serial.print(floor(floor((double)guess_r / 4.0) / tolerance));
     Serial.print(" g: ");
@@ -197,8 +209,9 @@ void loop() {
     Serial.print(" rb: ");
     Serial.println(floor(rand_blue / tolerance));
 
-
+    //If the guess is the same as the random number
     if (floor(floor((double)guess_r / 4.0) / tolerance) == floor(rand_red / tolerance)) {
+      //Mark the guess as correct
       digitalWrite(IND_R_CORRECT, HIGH);
       digitalWrite(IND_R_INCORRECT, LOW);
       correct_r = true;
@@ -230,6 +243,6 @@ void loop() {
       digitalWrite(IND_B_INCORRECT, HIGH);
       correct_b = false;
     }
-  }
+  //}
 
 }
