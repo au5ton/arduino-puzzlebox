@@ -13,11 +13,12 @@
 #define BRIDGE_IN 7
 #define BUZZER 3
 
-//These let us display Englsih alphabet looking numbers to the 7-segment display
+//These let us display English alphabet looking numbers to the 7-segment display
 //
 const int digits[] = {3, 159, 37, 13, 153, 73, 65, 31, 1, 25};
 boolean gameWon = false;
 const int timerLength = 60; //Maximum of 99
+const int secondLength = 1000;
 
 
 void setup(){
@@ -46,7 +47,7 @@ void loop(){
       break;
     }
     Serial.println("1 SECOND");
-    delay(1000);
+    delay(secondLength);
   }
   //If your timer runs out, or the for-loop is broken, the code below will run
   
@@ -55,7 +56,15 @@ void loop(){
     //Tell the other Arduino that you lost
     digitalWrite(BRIDGE_OUT, HIGH);
     //Make a buzzing sound
-    tone(BUZZER,2000,1000);
+    tone(BUZZER,1800,1000); //Buzz on `BUZZER` at 2000Hz in pitch for 1000ms
+  }
+  else {
+    //Beeps twice when you win
+    tone(BUZZER,2200);
+    delay(500);
+    tone(BUZZER,0);
+    delay(25);
+    tone(BUZZER,2200,500);
   }
   //Infinite loop once the game is over, for winning AND losing
   while(true){

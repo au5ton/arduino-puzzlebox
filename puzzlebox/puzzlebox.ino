@@ -91,6 +91,9 @@ void loop() {
   guess_g = analogRead(DIAL_G);
   guess_b = analogRead(DIAL_B);
 
+  //SHOWS TO THE RGB LED
+  //SHOWS TO THE RGB LED
+  //SHOWS TO THE RGB LED
   //Writes the color you're guessing to the RGB LED, so you can see your guess
   //Divides by 4.0 so that 1024 (dial reading) can fit into 256 (random color)
   analogWrite(LED_R, (int)floor((double)guess_r / 4.0));
@@ -123,9 +126,8 @@ void loop() {
     
   }
   
-  //If you've guessed all of them correctly, ...
+  //If you've guessed all of them correctly, send a signal to the timer to stop
   if(correct_r == true && correct_g == true && correct_b == true) {
-    // ... send a signal to the timer to stop
     digitalWrite(BRIDGE_OUT,HIGH);
   }
 
@@ -193,6 +195,9 @@ void loop() {
     Serial.println(floor(rand_blue / tolerance));
 
     //If the guess is the same as the random number
+    //IN THE MATH:
+    //Proportionally scales from 0/1024 form to 0/256 form, by dividing by 4.0
+    //Divides by the `tolerance` value and uses floor() to make an adjustable tolerance setting
     if (floor(floor((double)guess_r / 4.0) / tolerance) == floor(rand_red / tolerance)) {
       //Mark the guess as correct
       digitalWrite(IND_R_CORRECT, HIGH);
@@ -226,6 +231,6 @@ void loop() {
       digitalWrite(IND_B_INCORRECT, HIGH);
       correct_b = false;
     }
-  //}
+  }
 
 }
