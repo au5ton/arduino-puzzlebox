@@ -35,7 +35,7 @@ boolean super_impossible_mode = false;
 boolean correct_r = false, correct_g = false, correct_b = false;
 
 //DO NOT SET AS 0, IT WILL DIVIDE BY 0 AND THATS BAD
-double tolerance = 32.0;
+double tolerance = 1.0;
 /*
 TOLERANCE DIFFICULTIES
 
@@ -61,10 +61,10 @@ void setup() {
   pinMode(IND_G_INCORRECT, OUTPUT);
   pinMode(IND_B_CORRECT, OUTPUT);
   pinMode(IND_B_INCORRECT, OUTPUT);
-  
+
   pinMode(BRIDGE_OUT, OUTPUT);
   pinMode(BRIDGE_IN, INPUT);
-  digitalWrite(BRIDGE_OUT,LOW); //Writes low to the other Arduino so it doesn't think that the game is over yet
+  digitalWrite(BRIDGE_OUT, LOW); //Writes low to the other Arduino so it doesn't think that the game is over yet
 
   Serial.print("Generating a random color...");
   if (super_impossible_mode == true) {
@@ -85,7 +85,7 @@ void setup() {
 }
 
 void loop() {
-  
+
   //Saves the data from the Dials into variables
   guess_r = analogRead(DIAL_R);
   guess_g = analogRead(DIAL_G);
@@ -99,36 +99,51 @@ void loop() {
   analogWrite(LED_R, (int)floor((double)guess_r / 4.0));
   analogWrite(LED_G, (int)floor((double)guess_g / 4.0));
   analogWrite(LED_B, (int)floor((double)guess_b / 4.0));
-  
+
   //(WHEN YOU LOSE)
   //When the timer times out it sends a signal
   //If the signal is received, ...
-  if(digitalRead(BRIDGE_IN) == HIGH) {
+  if (digitalRead(BRIDGE_IN) == HIGH) {
     // ... then turn all the Indicators to RED
-    digitalWrite(IND_R_INCORRECT,HIGH);
-    digitalWrite(IND_R_CORRECT,LOW);
-    digitalWrite(IND_G_INCORRECT,HIGH);
-    digitalWrite(IND_G_CORRECT,LOW);
-    digitalWrite(IND_B_INCORRECT,HIGH);
-    digitalWrite(IND_B_CORRECT,LOW);
-    
+    digitalWrite(IND_R_INCORRECT, HIGH);
+    digitalWrite(IND_R_CORRECT, LOW);
+    digitalWrite(IND_G_INCORRECT, HIGH);
+    digitalWrite(IND_G_CORRECT, LOW);
+    digitalWrite(IND_B_INCORRECT, HIGH);
+    digitalWrite(IND_B_CORRECT, LOW);
+
     //Changes the random color to something that's un-guessable
     rand_red = -10;
     rand_green = -10;
     rand_blue = -10;
-    
+
     //Infinite loop that waits for you to reset the Arduino
-    while(true){
+    while (true) {
       //wait for reset
       Serial.println("puzzlebox done...");
-      digitalWrite(BRIDGE_OUT,LOW);
+      digitalWrite(BRIDGE_OUT, LOW);
     }
-    
+
   }
-  
+
   //If you've guessed all of them correctly, send a signal to the timer to stop
-  if(correct_r == true && correct_g == true && correct_b == true) {
-    digitalWrite(BRIDGE_OUT,HIGH);
+  if (correct_r == true && correct_g == true && correct_b == true) {
+    if (digitalRead(BRIDGE_IN) == HIGH) {
+      digitalWrite(IND_R_INCORRECT, HIGH);
+      digitalWrite(IND_R_CORRECT, LOW);
+      digitalWrite(IND_G_INCORRECT, HIGH);
+      digitalWrite(IND_G_CORRECT, LOW);
+      digitalWrite(IND_B_INCORRECT, HIGH);
+      digitalWrite(IND_B_CORRECT, LOW);
+      rand_red = -10;
+      rand_green = -10;
+      rand_blue = -10;
+      while (true) {
+        Serial.println("puzzlebox done...");
+        digitalWrite(BRIDGE_OUT, LOW);
+      }
+    }
+    digitalWrite(BRIDGE_OUT, HIGH);
   }
 
   if (super_impossible_mode == true) {
